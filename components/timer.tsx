@@ -39,6 +39,12 @@ export function Timer({ taskId, timerStartedAt, totalTimeSpent }: TimerProps) {
   const isRunning = !!timerStartedAt;
 
   useEffect(() => {
+    if (isRunning) {
+      setCurrentTime(Date.now());
+    }
+  }, [isRunning, timerStartedAt]);
+
+  useEffect(() => {
     if (!isRunning) return;
 
     const interval = setInterval(() => {
