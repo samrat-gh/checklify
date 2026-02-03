@@ -17,6 +17,9 @@
   --destructive: #ef4444;
   --card: #0f0f0f;
   --card-foreground: #fafafa;
+  --popover: #0f0f0f;
+  --popover-foreground: #fafafa;
+  --radius: 0.5rem;
 }
 
 @theme inline {

@@ -2,7 +2,8 @@
 
 import { useMutation } from "convex/react";
 import { Pause, Play } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -35,14 +36,42 @@ export function Timer({ taskId, timerStartedAt, totalTimeSpent }: TimerProps) {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const startTimer = useMutation(api.tasks.startTimer);
   const stopTimer = useMutation(api.tasks.stopTimer);
+  const isRunningRef = useRef(false);
 
   const isRunning = !!timerStartedAt;
+  isRunningRef.current = isRunning;
+
+  const stopTimerCallback = useCallback(() => {
+    stopTimer({ id: taskId });
+    toast.warning("Timer paused due to interruptions", {
+      position: "top-right",
+      duration: 5000,
+    });
+  }, [stopTimer, taskId]);
+
+  // Stop timer when browser/tab is closing or hidden
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isRunningRef.current) {
+        stopTimerCallback();
+        event.preventDefault();
+        // For older browsers, specify returnValue
+        event.returnValue = "";
+        // Fire-and-forget: attempt to stop the timer
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [stopTimerCallback]);
 
   useEffect(() => {
     if (isRunning) {
       setCurrentTime(Date.now());
     }
-  }, [isRunning, timerStartedAt]);
+  }, [isRunning]);
 
   useEffect(() => {
     if (!isRunning) return;
