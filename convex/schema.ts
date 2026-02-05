@@ -5,7 +5,8 @@ export default defineSchema({
   projects: defineTable({
     name: v.string(),
     color: v.optional(v.string()),
-  }),
+    userId: v.string(),
+  }).index("by_user", ["userId"]),
 
   tasks: defineTable({
     text: v.string(),
@@ -20,5 +21,9 @@ export default defineSchema({
     timerStartedAt: v.optional(v.number()),
     totalTimeSpent: v.number(),
     createdAt: v.number(),
-  }).index("by_status", ["status"]),
+    userId: v.string(),
+  })
+    .index("by_status", ["status"])
+    .index("by_user", ["userId"])
+    .index("by_user_and_status", ["userId", "status"]),
 });

@@ -1,100 +1,241 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { SquareCheckBig } from "lucide-react";
-import { useState } from "react";
-import { AddTaskForm } from "@/components/add-task-form";
-import { ProjectManager } from "@/components/project-manager";
-import { TaskItem } from "@/components/task-item";
-import { api } from "@/convex/_generated/api";
+import {
+  CheckCircle2,
+  Lock,
+  Palette,
+  SquareCheckBig,
+  TrendingUp,
+} from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-type FilterStatus = "all" | "open" | "in-progress" | "closed";
-
-export default function Home() {
-  const tasks = useQuery(api.tasks.get);
-  const [filter, setFilter] = useState<FilterStatus>("all");
-
-  const filteredTasks = tasks?.filter((task) => {
-    if (filter === "all") return true;
-    return task.status === filter;
-  });
-
-  const taskCounts = {
-    all: tasks?.length ?? 0,
-    open: tasks?.filter((t) => t.status === "open").length ?? 0,
-    "in-progress": tasks?.filter((t) => t.status === "in-progress").length ?? 0,
-    closed: tasks?.filter((t) => t.status === "closed").length ?? 0,
-  };
-
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-2xl px-4 py-8">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="mb-1 flex items-center font-semibold text-2xl tracking-tight">
-            <SquareCheckBig className="my-1 mr-2 inline-block" size={26} />
-            Checklist
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Personal task management tool
-          </p>
-        </header>
-
-        {/* Actions bar */}
-        <div className="mb-6 flex items-center justify-between">
-          <AddTaskForm />
-          <ProjectManager />
-        </div>
-
-        {/* Filter tabs */}
-        <div className="mb-6 flex w-fit items-center gap-1 rounded-lg bg-secondary/30 p-1">
-          {(["all", "open", "in-progress", "closed"] as const).map((status) => (
-            <button
-              type="button"
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`rounded-md px-3 py-1.5 font-medium text-xs transition-colors ${
-                filter === status
-                  ? "bg-secondary text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Navigation */}
+      <nav className="fixed top-0 z-50 w-full border-border border-b bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+              <SquareCheckBig
+                color="#ffffff"
+                className="size-5 text-primary-foreground md:size-6"
+              />
+            </div>
+            <span className="font-bold text-lg">Checklist</span>
+          </div>
+          <div className="hidden items-center gap-8 md:flex">
+            <Link
+              href="#features"
+              className="text-sm transition hover:text-primary"
             >
-              {status === "all"
-                ? "All"
-                : status === "in-progress"
-                  ? "In Progress"
-                  : status.charAt(0).toUpperCase() + status.slice(1)}
-              <span className="ml-1.5 text-muted-foreground">
-                {taskCounts[status]}
-              </span>
-            </button>
-          ))}
+              Features
+            </Link>
+          </div>
+          <Link href="/dashboard">
+            <Button
+              size="sm"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Get Started
+            </Button>
+          </Link>
         </div>
+      </nav>
 
-        {/* Task list */}
-        <div className="space-y-2">
-          {!tasks && (
-            <div className="py-12 text-center text-muted-foreground">
-              Loading...
-            </div>
-          )}
-
-          {filteredTasks?.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground">
-              {filter === "all"
-                ? "No tasks yet. Add one to get started!"
-                : `No ${filter === "in-progress" ? "in progress" : filter} tasks`}
-            </div>
-          )}
-
-          {filteredTasks?.map((task) => (
-            <TaskItem
-              key={task._id}
-              task={{ ...task, project: task.project ?? null }}
-            />
-          ))}
+      {/* Hero Section */}
+      <section className="px-4 pt-32 pb-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl text-center">
+          <h1 className="mb-6 text-balance font-bold text-5xl sm:text-6xl lg:text-7xl">
+            Your tasks, organized. Finally.
+          </h1>
+          <p className="mx-auto mb-8 max-w-2xl text-balance text-muted-foreground text-xl sm:text-2xl">
+            Simple task management that just works. Focus on what matters, not
+            the tool.
+          </p>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link href="/dashboard">
+              <Button
+                size="lg"
+                className="bg-primary px-8 text-primary-foreground hover:bg-primary/90"
+              >
+                Get Started
+              </Button>
+            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-border bg-transparent px-8 hover:bg-secondary"
+            >
+              Learn More
+            </Button>
+          </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      {/* Features Section */}
+      <section
+        id="features"
+        className="border-border border-t px-4 py-20 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 font-bold text-4xl sm:text-5xl">
+              Everything you need to stay organized
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Clean, powerful features designed for focused task management.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            {/* Feature 1 */}
+            <div className="rounded-xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
+                <CheckCircle2 className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-3 font-semibold text-xl">Smart Organization</h3>
+              <p className="text-muted-foreground">
+                Create tasks with priorities, organize into color-coded
+                projects, and track everything at a glance.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="rounded-xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
+                <Palette className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-3 font-semibold text-xl">Visual Projects</h3>
+              <p className="text-muted-foreground">
+                Color-coded projects make it easy to categorize and filter your
+                tasks exactly how you want them.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="rounded-xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-3 font-semibold text-xl">Progress Tracking</h3>
+              <p className="text-muted-foreground">
+                Monitor your completion status and see your productivity grow in
+                real-time.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="rounded-xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
+                <Lock className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-3 font-semibold text-xl">Private Workspace</h3>
+              <p className="text-muted-foreground">
+                Your tasks are private to you. Secure authentication means your
+                data stays yours.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="border-border border-t px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="mb-6 font-bold text-4xl sm:text-5xl">
+            Ready to get organized?
+          </h2>
+          <p className="mb-8 text-muted-foreground text-xl">
+            Start managing your tasks the simple way, today.
+          </p>
+          <Link href="/dashboard">
+            <Button
+              size="lg"
+              className="bg-primary px-8 text-primary-foreground hover:bg-primary/90"
+            >
+              Get Started Now
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-border border-t px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
+            <div className="col-span-2 md:col-span-1">
+              <div className="mb-4 flex items-center gap-2">
+                <SquareCheckBig
+                  color="#ffffff"
+                  className="size-5 text-primary-foreground md:size-6"
+                />
+                <span className="font-bold">Checklist</span>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                Simple task management that just works.
+              </p>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold">Product</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm">
+                <li>
+                  <Link
+                    href="#features"
+                    className="transition hover:text-primary"
+                  >
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="transition hover:text-primary">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold">Company</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm">
+                <li>
+                  <Link href="#" className="transition hover:text-primary">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="transition hover:text-primary">
+                    Blog
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold">Legal</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm">
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="transition hover:text-primary"
+                  >
+                    Privacy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="transition hover:text-primary">
+                    Terms
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-between border-border border-t pt-8 text-muted-foreground text-sm sm:flex-row">
+            <p>
+              &copy; {new Date().getFullYear()} Checklist. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }

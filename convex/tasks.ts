@@ -1,12 +1,26 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Get all tasks with project info
+// Get all tasks with project info for the authenticated user
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const tasks = await ctx.db.query("tasks").order("desc").collect();
-    const projects = await ctx.db.query("projects").collect();
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    const userId = identity.subject;
+    const tasks = await ctx.db
+      .query("tasks")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .collect();
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
 
     return tasks.map((task) => ({
       ...task,
@@ -26,6 +40,12 @@ export const create = mutation({
     scheduledTime: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const userId = identity.subject;
     return await ctx.db.insert("tasks", {
       text: args.text,
       projectId: args.projectId,
@@ -34,6 +54,7 @@ export const create = mutation({
       scheduledTime: args.scheduledTime,
       totalTimeSpent: 0,
       createdAt: Date.now(),
+      userId,
     });
   },
 });
@@ -49,8 +70,16 @@ export const updateStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
     const task = await ctx.db.get(args.id);
     if (!task) throw new Error("Task not found");
+    if (task.userId !== identity.subject) {
+      throw new Error("Not authorized");
+    }
 
     // If closing a task with active timer, stop it first
     let totalTimeSpent = task.totalTimeSpent;
@@ -71,8 +100,16 @@ export const updateStatus = mutation({
 export const startTimer = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
     const task = await ctx.db.get(args.id);
     if (!task) throw new Error("Task not found");
+    if (task.userId !== identity.subject) {
+      throw new Error("Not authorized");
+    }
     if (task.timerStartedAt) return; // Already running
 
     await ctx.db.patch(args.id, {
@@ -86,8 +123,16 @@ export const startTimer = mutation({
 export const stopTimer = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
     const task = await ctx.db.get(args.id);
     if (!task) throw new Error("Task not found");
+    if (task.userId !== identity.subject) {
+      throw new Error("Not authorized");
+    }
     if (!task.timerStartedAt) return; // Not running
 
     const elapsed = Date.now() - task.timerStartedAt;
@@ -102,6 +147,17 @@ export const stopTimer = mutation({
 export const remove = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const task = await ctx.db.get(args.id);
+    if (!task) throw new Error("Task not found");
+    if (task.userId !== identity.subject) {
+      throw new Error("Not authorized");
+    }
+
     await ctx.db.delete(args.id);
   },
 });
@@ -116,6 +172,17 @@ export const update = mutation({
     scheduledTime: v.optional(v.union(v.string(), v.null())),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const task = await ctx.db.get(args.id);
+    if (!task) throw new Error("Task not found");
+    if (task.userId !== identity.subject) {
+      throw new Error("Not authorized");
+    }
+
     const { id, ...updates } = args;
     const cleanUpdates: Record<string, unknown> = {};
 

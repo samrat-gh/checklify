@@ -1,8 +1,9 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,6 +32,7 @@ export function ProjectManager() {
   const [name, setName] = useState("");
   const [color, setColor] = useState(PROJECT_COLORS[5]);
 
+  const { isAuthenticated, isLoading } = useConvexAuth();
   const projects = useQuery(api.projects.get);
   const createProject = useMutation(api.projects.create);
   const removeProject = useMutation(api.projects.remove);
@@ -39,10 +41,20 @@ export function ProjectManager() {
     e.preventDefault();
     if (!name.trim()) return;
 
-    await createProject({ name: name.trim(), color });
-    setName("");
-    setColor(PROJECT_COLORS[5]);
-    setOpen(false);
+    if (!isAuthenticated) {
+      toast.error("Please sign in to create projects");
+      return;
+    }
+
+    try {
+      await createProject({ name: name.trim(), color });
+      setName("");
+      setColor(PROJECT_COLORS[5]);
+      setOpen(false);
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      toast.error("Failed to create project. Please try signing in again.");
+    }
   };
 
   return (
