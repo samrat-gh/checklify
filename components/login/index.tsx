@@ -1,25 +1,19 @@
 "use client";
 
 import { SignOutButton } from "@clerk/nextjs";
-import { BarChart3, CheckCircle, LogOut, Timer, User } from "lucide-react";
+import { BarChart3, CheckCircle, LogOut, Timer, type User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import CustomSignInForm from "@/components/login/custom-signin-form";
-import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { useCustomAuth } from "@/hooks/useCustomAuth";
 
 export default function Login() {
@@ -38,14 +32,9 @@ export default function Login() {
 
   if (!isLoaded) {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="relative rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-md"
-        disabled
-      >
-        <LoadingSpinner size="sm" text="" />
-      </Button>
+      <main className="flex min-h-screen w-full justify-center bg-background">
+        <LoadingSpinner size="lg" text="Signing in..." />
+      </main>
     );
   }
 
@@ -59,9 +48,8 @@ export default function Login() {
 
   return (
     <Dialog open={open}>
-      <TooltipProvider>
+      {/* <TooltipProvider>
         <Tooltip delayDuration={700}>
-          {/* Tooltip wraps ONLY the trigger button */}
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
               <Button
@@ -81,58 +69,58 @@ export default function Login() {
           <TooltipContent side="bottom" className="text-white dark:text-black">
             Sign in
           </TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
 
-        {/* The actual Dialog content */}
-        <DialogContent
-          className="border border-white/20 bg-black/40 text-white shadow-xl backdrop-blur-md sm:max-w-md"
-          overlayClassName="backdrop-blur-sm"
-          showCloseButton={false}
-          onInteractOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
-        >
-          <div className="absolute inset-0 animate-gradient-shift" />
-          <div className="relative z-10">
-            <DialogHeader className="space-y-3 pb-2 text-center">
-              <DialogTitle className="bg-gradient-to-r from-white to-white/80 bg-clip-text font-semibold text-2xl text-transparent">
-                Login to Checklist
-              </DialogTitle>
-              <DialogDescription className="text-sm text-white/60 leading-relaxed">
-                Manage your task and track your productivity.
-              </DialogDescription>
-            </DialogHeader>
+      {/* The actual Dialog content */}
+      <DialogContent
+        className="border border-white/20 bg-black/40 text-white shadow-xl backdrop-blur-md sm:max-w-md"
+        overlayClassName="backdrop-blur-sm"
+        showCloseButton={false}
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <div className="absolute inset-0 animate-gradient-shift" />
+        <div className="relative z-10">
+          <DialogHeader className="space-y-3 pb-2 text-center">
+            <DialogTitle className="bg-gradient-to-r from-white to-white/80 bg-clip-text font-semibold text-2xl text-transparent">
+              Login to Checklist
+            </DialogTitle>
+            <DialogDescription className="text-sm text-white/60 leading-relaxed">
+              Manage your task and track your productivity.
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="space-y-6 pt-2">
-              <div className="space-y-3">
-                <div className="grid gap-3">
-                  <FeatureItem
-                    icon={CheckCircle}
-                    color="emerald"
-                    title="Sync & Save Progress"
-                    desc="Never lose your productivity streak"
-                  />
-                  <FeatureItem
-                    icon={Timer}
-                    color="purple"
-                    title="Productivity Tracking"
-                    desc="Curate your focus soundtrack"
-                  />
-                  <FeatureItem
-                    icon={BarChart3}
-                    color="blue"
-                    title="Advanced Analytics"
-                    desc="Track your focus patterns"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <CustomSignInForm onSuccess={handleAuthSuccess} />
+          <div className="space-y-6 pt-2">
+            <div className="space-y-3">
+              <div className="grid gap-3">
+                <FeatureItem
+                  icon={CheckCircle}
+                  color="emerald"
+                  title="Sync & Save Progress"
+                  desc="Never lose your productivity streak"
+                />
+                <FeatureItem
+                  icon={Timer}
+                  color="purple"
+                  title="Productivity Tracking"
+                  desc="Curate your focus soundtrack"
+                />
+                <FeatureItem
+                  icon={BarChart3}
+                  color="blue"
+                  title="Advanced Analytics"
+                  desc="Track your focus patterns"
+                />
               </div>
             </div>
+
+            <div className="pt-2">
+              <CustomSignInForm onSuccess={handleAuthSuccess} />
+            </div>
           </div>
-        </DialogContent>
-      </TooltipProvider>
+        </div>
+      </DialogContent>
+      {/* </TooltipProvider> */}
     </Dialog>
   );
 }

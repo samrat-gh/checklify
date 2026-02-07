@@ -9,6 +9,8 @@ export default function SSOCallback() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  console.log(error);
+
   useEffect(() => {
     // Set a flag for new tab authentication
     if (window.opener) {
@@ -38,6 +40,7 @@ export default function SSOCallback() {
   }, [isLoading, router]);
 
   if (error) {
+    router.push("/");
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="rounded-lg bg-white p-8 text-center shadow-md">
@@ -58,10 +61,9 @@ export default function SSOCallback() {
         </p>
 
         <AuthenticateWithRedirectCallback
+          signInUrl="dashboard"
           afterSignInUrl="/dashboard"
           afterSignUpUrl="/dashboard"
-          signInFallbackRedirectUrl="/dashboard"
-          signUpFallbackRedirectUrl="/dashboard"
         />
       </div>
     </div>

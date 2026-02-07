@@ -33,10 +33,10 @@ export default function HomePage() {
               Features
             </Link>
           </div>
-          <Link href="/dashboard">
+          <Link href="/dashboard" passHref>
             <Button
               size="sm"
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="cursor-pointer! bg-primary text-primary-foreground hover:bg-primary/90"
             >
               Get Started
             </Button>
@@ -55,10 +55,10 @@ export default function HomePage() {
             the tool.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/dashboard">
+            <Link href="/dashboard" passHref>
               <Button
                 size="lg"
-                className="bg-primary px-8 text-primary-foreground hover:bg-primary/90"
+                className="cursor-pointer! bg-primary px-8 text-primary-foreground hover:bg-primary/90"
               >
                 Get Started
               </Button>
@@ -150,10 +150,10 @@ export default function HomePage() {
           <p className="mb-8 text-muted-foreground text-xl">
             Start managing your tasks the simple way, today.
           </p>
-          <Link href="/dashboard">
+          <Link href="/dashboard" passHref>
             <Button
               size="lg"
-              className="bg-primary px-8 text-primary-foreground hover:bg-primary/90"
+              className="cursor-pointer! bg-primary px-8 text-primary-foreground hover:bg-primary/90"
             >
               Get Started Now
             </Button>
