@@ -27,8 +27,8 @@ const PROJECT_COLORS = [
   "#6b7280", // gray
 ];
 
-export function ProjectManager() {
-  const [open, setOpen] = useState(false);
+export function ProjectManager({ isOpen = false }: { isOpen?: boolean }) {
+  const [open, setOpen] = useState(isOpen);
   const [name, setName] = useState("");
   const [color, setColor] = useState(PROJECT_COLORS[5]);
 

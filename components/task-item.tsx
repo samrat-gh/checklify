@@ -1,14 +1,43 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Check, Circle, Clock, Pencil, Trash2 } from "lucide-react";
+import { format, parse } from "date-fns";
+import {
+  Calendar,
+  Check,
+  ChevronDown,
+  Circle,
+  Clock,
+  FolderPlus,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import { Timer } from "@/components/timer";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { TimePicker } from "@/components/ui/time-picker";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
+
+// Color options for projects
+const PROJECT_COLORS = [
+  { name: "Gray", value: "#6b7280" },
+  { name: "Red", value: "#ef4444" },
+  { name: "Orange", value: "#f97316" },
+  { name: "Yellow", value: "#eab308" },
+  { name: "Green", value: "#22c55e" },
+  { name: "Blue", value: "#3b82f6" },
+  { name: "Purple", value: "#a855f7" },
+  { name: "Pink", value: "#ec4899" },
+];
 
 type TaskStatus = "open" | "in-progress" | "closed";
 
@@ -54,13 +83,28 @@ const STATUS_CONFIG = {
 export function TaskItem({ task }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
-  const [editProjectId, setEditProjectId] = useState(task.projectId || "");
-  const [editDate, setEditDate] = useState(task.scheduledDate || "");
-  const [editTime, setEditTime] = useState(task.scheduledTime || "");
+  const [editProjectId, setEditProjectId] = useState<string>(
+    task.projectId || "",
+  );
+  const [editDate, setEditDate] = useState<Date | undefined>(
+    task.scheduledDate
+      ? parse(task.scheduledDate, "yyyy-MM-dd", new Date())
+      : undefined,
+  );
+  const [editTime, setEditTime] = useState<string | undefined>(
+    task.scheduledTime || undefined,
+  );
+
+  // Project popover states
+  const [projectPopoverOpen, setProjectPopoverOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectColor, setNewProjectColor] = useState("#6b7280");
 
   const updateStatus = useMutation(api.tasks.updateStatus);
   const updateTask = useMutation(api.tasks.update);
   const removeTask = useMutation(api.tasks.remove);
+  const createProject = useMutation(api.projects.create);
   const projects = useQuery(api.projects.get);
 
   const statusConfig = STATUS_CONFIG[task.status];
@@ -73,9 +117,28 @@ export function TaskItem({ task }: TaskItemProps) {
   const handleStartEdit = () => {
     setEditText(task.text);
     setEditProjectId(task.projectId || "");
-    setEditDate(task.scheduledDate || "");
-    setEditTime(task.scheduledTime || "");
+    setEditDate(
+      task.scheduledDate
+        ? parse(task.scheduledDate, "yyyy-MM-dd", new Date())
+        : undefined,
+    );
+    setEditTime(task.scheduledTime || undefined);
     setIsEditing(true);
+  };
+
+  const handleCreateProject = async () => {
+    if (!newProjectName.trim()) return;
+
+    const id = await createProject({
+      name: newProjectName.trim(),
+      color: newProjectColor,
+    });
+
+    setEditProjectId(id);
+    setNewProjectName("");
+    setNewProjectColor("#6b7280");
+    setIsCreatingProject(false);
+    setProjectPopoverOpen(false);
   };
 
   const handleCancelEdit = () => {
@@ -89,11 +152,13 @@ export function TaskItem({ task }: TaskItemProps) {
       id: task._id,
       text: editText.trim(),
       projectId: editProjectId ? (editProjectId as Id<"projects">) : null,
-      scheduledDate: editDate || null,
+      scheduledDate: editDate ? format(editDate, "yyyy-MM-dd") : null,
       scheduledTime: editTime || null,
     });
     setIsEditing(false);
   };
+
+  const selectedProject = projects?.find((p) => p._id === editProjectId);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -151,54 +216,195 @@ export function TaskItem({ task }: TaskItemProps) {
       {/* Task content */}
       <div className="min-w-0 flex-1">
         {isEditing ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Input
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
               onKeyDown={handleKeyDown}
               autoFocus
-              className="h-8 text-sm"
+              placeholder="Task name"
             />
-            <div className="flex gap-2">
-              <Select
-                value={editProjectId}
-                onChange={(e) => setEditProjectId(e.target.value)}
-                className="h-7 flex-1 text-xs"
+
+            <div>
+              <span className="mb-1.5 block text-muted-foreground text-xs">
+                Project
+              </span>
+              <Popover
+                open={projectPopoverOpen}
+                onOpenChange={setProjectPopoverOpen}
               >
-                <option value="">No project</option>
-                {projects?.map((project) => (
-                  <option key={project._id} value={project._id}>
-                    {project.name}
-                  </option>
-                ))}
-              </Select>
-              <Input
-                type="date"
-                value={editDate}
-                onChange={(e) => setEditDate(e.target.value)}
-                className="h-7 w-32 text-xs"
-              />
-              <Input
-                type="time"
-                value={editTime}
-                onChange={(e) => setEditTime(e.target.value)}
-                className="h-7 w-24 text-xs"
-              />
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-9 w-full justify-between font-normal text-sm"
+                  >
+                    <span className="flex items-center gap-2">
+                      {selectedProject ? (
+                        <>
+                          <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: selectedProject.color }}
+                          />
+                          {selectedProject.name}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          No project
+                        </span>
+                      )}
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="flex w-62.5 flex-col gap-2 bg-neutral-950 p-0"
+                  align="start"
+                >
+                  {isCreatingProject ? (
+                    <div className="space-y-3 p-3">
+                      <Input
+                        placeholder="Project name"
+                        value={newProjectName}
+                        onChange={(e) => setNewProjectName(e.target.value)}
+                        autoFocus
+                      />
+                      <div>
+                        <span className="mb-1.5 block text-muted-foreground text-xs">
+                          Color
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {PROJECT_COLORS.map((color) => (
+                            <button
+                              key={color.value}
+                              type="button"
+                              onClick={() => setNewProjectColor(color.value)}
+                              className={cn(
+                                "h-6 w-6 rounded-full transition-all",
+                                newProjectColor === color.value &&
+                                  "ring-2 ring-primary ring-offset-2 ring-offset-popover",
+                              )}
+                              style={{ backgroundColor: color.value }}
+                              title={color.name}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            setIsCreatingProject(false);
+                            setNewProjectName("");
+                            setNewProjectColor("#6b7280");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="flex-1"
+                          onClick={handleCreateProject}
+                          disabled={!newProjectName.trim()}
+                        >
+                          Create
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditProjectId("");
+                          setProjectPopoverOpen(false);
+                        }}
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent",
+                          !editProjectId && "bg-accent",
+                        )}
+                      >
+                        <span className="h-2.5 w-2.5 rounded-full bg-muted" />
+                        No project
+                        {!editProjectId && (
+                          <Check className="ml-auto h-4 w-4" />
+                        )}
+                      </button>
+                      {projects?.map((project) => (
+                        <button
+                          type="button"
+                          key={project._id}
+                          onClick={() => {
+                            setEditProjectId(project._id);
+                            setProjectPopoverOpen(false);
+                          }}
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent",
+                            editProjectId === project._id && "bg-accent",
+                          )}
+                        >
+                          <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: project.color }}
+                          />
+                          {project.name}
+                          {editProjectId === project._id && (
+                            <Check className="ml-auto h-4 w-4" />
+                          )}
+                        </button>
+                      ))}
+                      <div className="mt-1 border-border border-t pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setIsCreatingProject(true)}
+                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent"
+                        >
+                          <FolderPlus className="h-4 w-4" />
+                          Create new project
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
             </div>
-            <div className="flex gap-1">
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <span className="mb-1.5 block text-muted-foreground text-xs">
+                  Date
+                </span>
+                <DatePicker
+                  value={editDate}
+                  onChange={setEditDate}
+                  placeholder="Pick a date"
+                />
+              </div>
+
+              <div>
+                <span className="mb-1.5 block text-muted-foreground text-xs">
+                  Time (optional)
+                </span>
+                <TimePicker
+                  value={editTime}
+                  onChange={setEditTime}
+                  placeholder="Pick a time"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-1">
               <Button
                 size="sm"
-                className="h-6 px-2 text-xs"
                 onClick={handleSaveEdit}
+                disabled={!editText.trim()}
               >
-                Save
+                Save Changes
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 px-2 text-xs"
-                onClick={handleCancelEdit}
-              >
+              <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
                 Cancel
               </Button>
             </div>
