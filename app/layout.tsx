@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className="">
         <Toaster richColors />
         <Analytics />
+        <GoogleAnalytics gaId="G-3HQ4BY9CKB" />
         <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>
