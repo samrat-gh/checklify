@@ -69,7 +69,7 @@ export function PomodoroLoading({ className }: PomodoroLoadingProps) {
       <div className="relative z-10">
         <LoadingSpinner
           size="md"
-          text="Loading Checklist..."
+          text="Loading Checklify..."
           className="text-white"
         />
       </div>

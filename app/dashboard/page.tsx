@@ -40,7 +40,7 @@ export default function Home() {
             <div>
               <h1 className="mb-1 flex items-center font-semibold text-2xl tracking-tight">
                 <SquareCheckBig className="my-1 mr-2 inline-block" size={26} />
-                Checklist
+                Checklify
               </h1>
               <p className="text-muted-foreground text-sm">
                 Personal task management tool

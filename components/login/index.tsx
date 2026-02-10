@@ -83,7 +83,7 @@ export default function Login() {
         <div className="relative z-10">
           <DialogHeader className="space-y-3 pb-2 text-center">
             <DialogTitle className="bg-gradient-to-r from-white to-white/80 bg-clip-text font-semibold text-2xl text-transparent">
-              Login to Checklist
+              Login to Checklify
             </DialogTitle>
             <DialogDescription className="text-sm text-white/60 leading-relaxed">
               Manage your task and track your productivity.

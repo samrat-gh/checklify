@@ -7,7 +7,7 @@ import { ConvexClientProvider } from "@/components/convex-client-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Checklist | Personal Task Manager",
+  title: "Checklify | Personal Task Manager",
   description: "A minimal personal task management tool",
 };
 

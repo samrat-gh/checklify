@@ -23,7 +23,7 @@ export default function HomePage() {
                 className="size-5 text-primary-foreground md:size-6"
               />
             </div>
-            <span className="font-bold text-lg">Checklist</span>
+            <span className="font-bold text-lg">Checklify</span>
           </div>
           <div className="hidden items-center gap-8 md:flex">
             <Link
@@ -171,7 +171,7 @@ export default function HomePage() {
                   color="#ffffff"
                   className="size-5 text-primary-foreground md:size-6"
                 />
-                <span className="font-bold">Checklist</span>
+                <span className="font-bold">Checklify</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 Simple task management that just works.
@@ -231,7 +231,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col items-center justify-between border-border border-t pt-8 text-muted-foreground text-sm sm:flex-row">
             <p>
-              &copy; {new Date().getFullYear()} Checklist. All rights reserved.
+              &copy; {new Date().getFullYear()} Checklify. All rights reserved.
             </p>
           </div>
         </div>

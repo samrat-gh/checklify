@@ -25,7 +25,7 @@ A minimal personal task management app built with Next.js and Convex.
 
 ```bash
 git clone <your-repo-url>
-cd checklist
+cd checklify
 ```
 
 2. **Install dependencies**
