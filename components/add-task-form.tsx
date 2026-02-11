@@ -2,7 +2,13 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { format } from "date-fns";
-import { Check, ChevronDown, FolderPlus, Plus } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  FlagTriangleRight,
+  FolderPlus,
+  Plus,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -46,6 +52,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
   const [projectId, setProjectId] = useState<string>("");
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
   const [scheduledTime, setScheduledTime] = useState<string | undefined>();
+  const [priority, setPriority] = useState(false);
 
   // Inline project creation states
   const [projectPopoverOpen, setProjectPopoverOpen] = useState(false);
@@ -68,12 +75,14 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
         ? format(scheduledDate, "yyyy-MM-dd")
         : undefined,
       scheduledTime: scheduledTime || undefined,
+      priority: priority || undefined,
     });
 
     setText("");
     setProjectId("");
     setScheduledDate(undefined);
     setScheduledTime(undefined);
+    setPriority(false);
     setOpen(false);
     onComplete?.();
   };
@@ -83,6 +92,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
     setProjectId("");
     setScheduledDate(undefined);
     setScheduledTime(undefined);
+    setPriority(false);
     setOpen(false);
   };
 
@@ -290,6 +300,25 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                 placeholder="Pick a time"
               />
             </div>
+          </div>
+
+          {/* Priority checkbox */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPriority(!priority)}
+              className={cn(
+                "flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors",
+                priority
+                  ? "border-red-500 bg-red-500/10 text-red-500"
+                  : "border-border text-muted-foreground hover:border-muted-foreground",
+              )}
+            >
+              <FlagTriangleRight
+                className={cn("h-4 w-4", priority && "fill-red-500")}
+              />
+              Priority
+            </button>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

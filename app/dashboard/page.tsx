@@ -17,10 +17,17 @@ export default function Home() {
   const tasks = useQuery(api.tasks.get);
   const [filter, setFilter] = useState<FilterStatus>("all");
 
-  const filteredTasks = tasks?.filter((task) => {
-    if (filter === "all") return true;
-    return task.status === filter;
-  });
+  const filteredTasks = tasks
+    ?.filter((task) => {
+      if (filter === "all") return true;
+      return task.status === filter;
+    })
+    ?.sort((a, b) => {
+      // Priority tasks first
+      if (a.priority && !b.priority) return -1;
+      if (!a.priority && b.priority) return 1;
+      return 0;
+    });
 
   const taskCounts = {
     all: tasks?.length ?? 0,

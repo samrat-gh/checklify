@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Circle,
   Clock,
+  FlagTriangleRight,
   FolderPlus,
   Pencil,
   Trash2,
@@ -47,6 +48,7 @@ interface TaskWithProject {
   text: string;
   status: TaskStatus;
   projectId?: Id<"projects">;
+  priority?: boolean;
   scheduledDate?: string;
   scheduledTime?: string;
   timerStartedAt?: number;
@@ -94,6 +96,7 @@ export function TaskItem({ task }: TaskItemProps) {
   const [editTime, setEditTime] = useState<string | undefined>(
     task.scheduledTime || undefined,
   );
+  const [editPriority, setEditPriority] = useState(task.priority || false);
 
   // Project popover states
   const [projectPopoverOpen, setProjectPopoverOpen] = useState(false);
@@ -123,6 +126,7 @@ export function TaskItem({ task }: TaskItemProps) {
         : undefined,
     );
     setEditTime(task.scheduledTime || undefined);
+    setEditPriority(task.priority || false);
     setIsEditing(true);
   };
 
@@ -154,6 +158,7 @@ export function TaskItem({ task }: TaskItemProps) {
       projectId: editProjectId ? (editProjectId as Id<"projects">) : null,
       scheduledDate: editDate ? format(editDate, "yyyy-MM-dd") : null,
       scheduledTime: editTime || null,
+      priority: editPriority || null,
     });
     setIsEditing(false);
   };
@@ -199,9 +204,13 @@ export function TaskItem({ task }: TaskItemProps) {
 
   return (
     <div
-      className={`group flex items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-muted ${
-        task.status === "closed" ? "opacity-60" : ""
-      }`}
+      className={cn(
+        "group flex items-start gap-3 rounded-lg border p-3 transition-colors",
+        task.priority
+          ? "border-t-border border-r-border border-b-border border-l-4 border-l-red-500 bg-red-500/5"
+          : "border-border bg-card hover:border-muted",
+        task.status === "closed" && "opacity-60",
+      )}
     >
       {/* Status toggle */}
       <button
@@ -396,6 +405,25 @@ export function TaskItem({ task }: TaskItemProps) {
               </div>
             </div>
 
+            {/* Priority checkbox */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setEditPriority(!editPriority)}
+                className={cn(
+                  "flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors",
+                  editPriority
+                    ? "border-red-500 bg-red-500/10 text-red-500"
+                    : "border-border text-muted-foreground hover:border-muted-foreground",
+                )}
+              >
+                <FlagTriangleRight
+                  className={cn("h-4 w-4", editPriority && "fill-red-500")}
+                />
+                Priority
+              </button>
+            </div>
+
             <div className="flex gap-2 pt-1">
               <Button
                 size="sm"
@@ -411,15 +439,25 @@ export function TaskItem({ task }: TaskItemProps) {
           </div>
         ) : (
           <>
-            <p
-              className={`text-sm ${
-                task.status === "closed"
-                  ? "text-muted-foreground line-through"
-                  : ""
-              }`}
-            >
-              {task.text}
-            </p>
+            <div className="flex items-center gap-2">
+              {task.priority && (
+                <span className="flex items-center gap-1 rounded-md bg-red-500/15 px-1.5 py-0.5">
+                  <FlagTriangleRight className="h-4 w-4 fill-red-500 text-red-500" />
+                  <span className="font-medium text-red-500 text-xs">
+                    Priority
+                  </span>
+                </span>
+              )}
+              <p
+                className={cn(
+                  "text-sm",
+                  task.status === "closed" &&
+                    "text-muted-foreground line-through",
+                )}
+              >
+                {task.text}
+              </p>
+            </div>
 
             {/* Meta info */}
             <div className="mt-1.5 flex flex-wrap items-center gap-3">

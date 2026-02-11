@@ -16,6 +16,7 @@ export default defineSchema({
       v.literal("in-progress"),
       v.literal("closed"),
     ),
+    priority: v.optional(v.boolean()),
     scheduledDate: v.optional(v.string()),
     scheduledTime: v.optional(v.string()),
     timerStartedAt: v.optional(v.number()),

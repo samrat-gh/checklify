@@ -38,6 +38,7 @@ export const create = mutation({
     projectId: v.optional(v.id("projects")),
     scheduledDate: v.optional(v.string()),
     scheduledTime: v.optional(v.string()),
+    priority: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -50,6 +51,7 @@ export const create = mutation({
       text: args.text,
       projectId: args.projectId,
       status: "open",
+      priority: args.priority,
       scheduledDate: args.scheduledDate,
       scheduledTime: args.scheduledTime,
       totalTimeSpent: 0,
@@ -170,6 +172,7 @@ export const update = mutation({
     projectId: v.optional(v.union(v.id("projects"), v.null())),
     scheduledDate: v.optional(v.union(v.string(), v.null())),
     scheduledTime: v.optional(v.union(v.string(), v.null())),
+    priority: v.optional(v.union(v.boolean(), v.null())),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -198,6 +201,10 @@ export const update = mutation({
     if (updates.scheduledTime !== undefined) {
       cleanUpdates.scheduledTime =
         updates.scheduledTime === null ? undefined : updates.scheduledTime;
+    }
+    if (updates.priority !== undefined) {
+      cleanUpdates.priority =
+        updates.priority === null ? undefined : updates.priority;
     }
 
     await ctx.db.patch(id, cleanUpdates);
