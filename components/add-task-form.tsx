@@ -278,7 +278,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
             </Popover>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <span className="mb-1.5 block text-muted-foreground text-xs">
                 Date

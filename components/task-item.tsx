@@ -439,28 +439,26 @@ export function TaskItem({ task }: TaskItemProps) {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2">
-              {task.priority && (
-                <span className="flex items-center gap-1 rounded-md bg-red-500/15 px-1.5 py-0.5">
-                  <FlagTriangleRight className="h-4 w-4 fill-red-500 text-red-500" />
-                  <span className="font-medium text-red-500 text-xs">
-                    Priority
-                  </span>
+            {task.priority && (
+              <span className="mb-1 flex w-fit items-center gap-1 rounded-md bg-red-500/15 px-1.5 py-0.5">
+                <FlagTriangleRight className="h-3.5 w-3.5 fill-red-500 text-red-500" />
+                <span className="font-medium text-red-500 text-xs">
+                  Priority
                 </span>
+              </span>
+            )}
+            <p
+              className={cn(
+                "text-sm",
+                task.status === "closed" &&
+                  "text-muted-foreground line-through",
               )}
-              <p
-                className={cn(
-                  "text-sm",
-                  task.status === "closed" &&
-                    "text-muted-foreground line-through",
-                )}
-              >
-                {task.text}
-              </p>
-            </div>
+            >
+              {task.text}
+            </p>
 
             {/* Meta info */}
-            <div className="mt-1.5 flex flex-wrap items-center gap-3">
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
               {task.project && (
                 <span className="flex items-center gap-1.5 text-muted-foreground text-xs">
                   <span
@@ -503,7 +501,7 @@ export function TaskItem({ task }: TaskItemProps) {
         <Button
           variant="ghost"
           size="icon-sm"
-          className="h-6 w-6 text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+          className="h-6 w-6 hover:text-foreground group-hover:opacity-100 md:text-muted-foreground md:opacity-0 md:transition-opacity"
           onClick={handleStartEdit}
         >
           <Pencil className="h-3 w-3" />
@@ -515,7 +513,7 @@ export function TaskItem({ task }: TaskItemProps) {
         <Button
           variant="ghost"
           size="icon-sm"
-          className="h-6 w-6 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+          className="h-6 w-6 hover:text-destructive group-hover:opacity-100 md:text-muted-foreground md:opacity-0 md:transition-opacity"
           onClick={() => removeTask({ id: task._id })}
         >
           <Trash2 className="h-3 w-3" />
