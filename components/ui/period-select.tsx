@@ -66,7 +66,7 @@ const TimePeriodSelect = React.forwardRef<
         >
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-neutral-950">
           <SelectItem value="AM">AM</SelectItem>
           <SelectItem value="PM">PM</SelectItem>
         </SelectContent>
