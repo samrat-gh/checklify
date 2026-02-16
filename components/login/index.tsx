@@ -1,11 +1,28 @@
 "use client";
 
-import { SignOutButton } from "@clerk/nextjs";
-import { BarChart3, CheckCircle, LogOut, Timer, type User } from "lucide-react";
+import { SignOutButton, useClerk } from "@clerk/nextjs";
+import {
+  BarChart3,
+  CheckCircle,
+  LogOut,
+  MoreVertical,
+  Timer,
+  Trash2,
+  type User,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import CustomSignInForm from "@/components/login/custom-signin-form";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -13,12 +30,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { useCustomAuth } from "@/hooks/useCustomAuth";
 
 export default function Login() {
   const { isLoaded, isSignedIn } = useCustomAuth();
+  const { user } = useClerk();
   const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -30,19 +57,81 @@ export default function Login() {
     setOpen(false);
   };
 
-  if (!isLoaded) {
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    setIsDeleting(true);
+    try {
+      await user.delete();
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      setIsDeleting(false);
+    }
+  };
+
+  if (!isLoaded || isDeleting) {
     return (
       <main className="flex min-h-screen w-full justify-center bg-background">
-        <LoadingSpinner size="lg" text="Signing in..." />
+        <LoadingSpinner
+          size="lg"
+          text={isDeleting ? "Deleting account..." : "Signing in..."}
+        />
       </main>
     );
   }
 
   if (isSignedIn) {
     return (
-      <SignOutButton>
-        <LogOut size={20} className="cursor-pointer" />
-      </SignOutButton>
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="cursor-pointer rounded-md p-1 transition-colors hover:bg-white/10"
+            >
+              <MoreVertical size={20} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40 bg-neutral-950">
+            <SignOutButton>
+              <DropdownMenuItem className="cursor-pointer">
+                <LogOut size={16} />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </SignOutButton>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onClick={() => setShowDeleteDialog(true)}
+            >
+              <Trash2 size={16} />
+              <span>Delete Account</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Account</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete your account? This action cannot
+                be undone and all your data will be permanently deleted.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAccount}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete Account
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
     );
   }
 
