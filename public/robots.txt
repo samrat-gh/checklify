@@ -1,0 +1,12 @@
+# *
+User-agent: *
+Allow: /
+
+Disallow: /sso-callback
+Disallow: /api/
+
+# Host
+Host: https://checklify.app
+
+# Sitemaps
+Sitemap: https://checklify.app/sitemap.xml

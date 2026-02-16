@@ -27,7 +27,7 @@ export default function HomePage() {
           </div>
           <div className="hidden items-center gap-8 md:flex">
             <Link
-              href="#features"
+              href="/features"
               className="text-sm transition hover:text-primary"
             >
               Features
@@ -48,7 +48,7 @@ export default function HomePage() {
       <section className="px-4 pt-32 pb-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-6 text-balance font-bold text-5xl sm:text-6xl lg:text-7xl">
-            Your tasks, organized. Finally.
+            Simplify your Checklist with Checklify
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-balance text-muted-foreground text-xl sm:text-2xl">
             Simple task management that just works. Focus on what matters, not
@@ -182,14 +182,17 @@ export default function HomePage() {
               <ul className="space-y-2 text-muted-foreground text-sm">
                 <li>
                   <Link
-                    href="#features"
+                    href="/features"
                     className="transition hover:text-primary"
                   >
                     Features
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="transition hover:text-primary">
+                  <Link
+                    href="/pricing"
+                    className="transition hover:text-primary"
+                  >
                     Pricing
                   </Link>
                 </li>
@@ -204,7 +207,7 @@ export default function HomePage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="transition hover:text-primary">
+                  <Link href="/blog" className="transition hover:text-primary">
                     Blog
                   </Link>
                 </li>
