@@ -141,13 +141,11 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
             </span>
             <Popover
               open={projectPopoverOpen}
-              onOpenChange={setProjectPopoverOpen}
-            >
+              onOpenChange={setProjectPopoverOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between font-normal"
-                >
+                  className="w-full justify-between font-normal">
                   <span className="flex items-center gap-2">
                     {selectedProject ? (
                       <>
@@ -166,8 +164,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
               </PopoverTrigger>
               <PopoverContent
                 className="flex w-[250px] flex-col gap-2 bg-neutral-950 p-0"
-                align="start"
-              >
+                align="start">
                 {isCreatingProject ? (
                   <div className="space-y-3 p-3">
                     <Input
@@ -207,8 +204,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                           setIsCreatingProject(false);
                           setNewProjectName("");
                           setNewProjectColor("#6b7280");
-                        }}
-                      >
+                        }}>
                         Cancel
                       </Button>
                       <Button
@@ -216,8 +212,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                         size="sm"
                         className="flex-1"
                         onClick={handleCreateProject}
-                        disabled={!newProjectName.trim()}
-                      >
+                        disabled={!newProjectName.trim()}>
                         Create
                       </Button>
                     </div>
@@ -233,8 +228,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                       className={cn(
                         "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent",
                         !projectId && "bg-accent",
-                      )}
-                    >
+                      )}>
                       <span className="h-2.5 w-2.5 rounded-full bg-muted" />
                       No project
                       {!projectId && <Check className="ml-auto h-4 w-4" />}
@@ -250,8 +244,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                         className={cn(
                           "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent",
                           projectId === project._id && "bg-accent",
-                        )}
-                      >
+                        )}>
                         <span
                           className="h-2.5 w-2.5 rounded-full"
                           style={{ backgroundColor: project.color }}
@@ -266,8 +259,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                       <button
                         type="button"
                         onClick={() => setIsCreatingProject(true)}
-                        className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent"
-                      >
+                        className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent">
                         <FolderPlus className="h-4 w-4" />
                         Create new project
                       </button>
@@ -312,8 +304,7 @@ export function AddTaskForm({ onComplete }: AddTaskFormProps) {
                 priority
                   ? "border-red-500 bg-red-500/10 text-red-500"
                   : "border-border text-muted-foreground hover:border-muted-foreground",
-              )}
-            >
+              )}>
               <FlagTriangleRight
                 className={cn("h-4 w-4", priority && "fill-red-500")}
               />

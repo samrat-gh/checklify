@@ -15,7 +15,7 @@ type FilterStatus = "all" | "open" | "in-progress" | "closed";
 export default function Home() {
   const { isSignedIn } = useClerk();
   const tasks = useQuery(api.tasks.get);
-  const [filter, setFilter] = useState<FilterStatus>("all");
+  const [filter, setFilter] = useState<FilterStatus>("open");
 
   const filteredTasks = tasks
     ?.filter((task) => {
@@ -75,8 +75,7 @@ export default function Home() {
                       filter === status
                         ? "bg-secondary text-foreground"
                         : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
+                    }`}>
                     {status === "all"
                       ? "All"
                       : status === "in-progress"

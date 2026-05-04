@@ -10,6 +10,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 
 interface TimerProps {
   taskId: Id<"tasks">;
+  taskName?: string;
   timerStartedAt: number | undefined;
   totalTimeSpent: number;
 }
@@ -32,7 +33,12 @@ function formatTime(ms: number): string {
   return `${displaySeconds}s`;
 }
 
-export function Timer({ taskId, timerStartedAt, totalTimeSpent }: TimerProps) {
+export function Timer({
+  taskId,
+  taskName,
+  timerStartedAt,
+  totalTimeSpent,
+}: TimerProps) {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const startTimer = useMutation(api.tasks.startTimer);
   const stopTimer = useMutation(api.tasks.stopTimer);
@@ -87,6 +93,25 @@ export function Timer({ taskId, timerStartedAt, totalTimeSpent }: TimerProps) {
     ? totalTimeSpent + (currentTime - timerStartedAt)
     : totalTimeSpent;
 
+  useEffect(() => {
+    if (isRunning && taskName) {
+      document.title = `${formatTime(elapsed)} - ${taskName} | checklify`;
+    } else {
+      // Allow Next.js or other tasks to reset the title gracefully
+      // But we can eagerly reset it if it was our timer that just stopped
+      if (document.title.includes(" | checklify")) {
+        document.title = "checklify";
+      }
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      if (isRunning && taskName && document.title.includes(" | checklify")) {
+        document.title = "checklify";
+      }
+    };
+  }, [elapsed, isRunning, taskName]);
+
   const handleToggle = () => {
     if (isRunning) {
       stopTimer({ id: taskId });
@@ -98,16 +123,14 @@ export function Timer({ taskId, timerStartedAt, totalTimeSpent }: TimerProps) {
   return (
     <div className="flex items-center gap-2">
       <span
-        className={`font-mono text-xs tabular-nums ${isRunning ? "text-green-400" : "text-muted-foreground"}`}
-      >
+        className={`font-mono text-xs tabular-nums ${isRunning ? "text-green-400" : "text-muted-foreground"}`}>
         {formatTime(elapsed)}
       </span>
       <Button
         variant="ghost"
         size="icon-sm"
         onClick={handleToggle}
-        className={`h-6 w-6 ${isRunning ? "text-green-400 hover:text-green-300" : "text-muted-foreground hover:text-foreground"}`}
-      >
+        className={`h-6 w-6 ${isRunning ? "text-green-400 hover:text-green-300" : "text-muted-foreground hover:text-foreground"}`}>
         {isRunning ? (
           <Pause className="h-3 w-3" />
         ) : (

@@ -210,15 +210,13 @@ export function TaskItem({ task }: TaskItemProps) {
           ? "border-t-border border-r-border border-b-border border-l-4 border-l-red-500 bg-red-500/5"
           : "border-border bg-card hover:border-muted",
         task.status === "closed" && "opacity-60",
-      )}
-    >
+      )}>
       {/* Status toggle */}
       <button
         type="button"
         onClick={handleStatusClick}
         className={`mt-0.5 rounded p-1 transition-colors ${statusConfig.className}`}
-        title={`Status: ${statusConfig.label}. Click to change.`}
-      >
+        title={`Status: ${statusConfig.label}. Click to change.`}>
         <StatusIcon className="h-4 w-4" />
       </button>
 
@@ -240,13 +238,11 @@ export function TaskItem({ task }: TaskItemProps) {
               </span>
               <Popover
                 open={projectPopoverOpen}
-                onOpenChange={setProjectPopoverOpen}
-              >
+                onOpenChange={setProjectPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="h-9 w-full justify-between font-normal text-sm"
-                  >
+                    className="h-9 w-full justify-between font-normal text-sm">
                     <span className="flex items-center gap-2">
                       {selectedProject ? (
                         <>
@@ -267,8 +263,7 @@ export function TaskItem({ task }: TaskItemProps) {
                 </PopoverTrigger>
                 <PopoverContent
                   className="flex w-62.5 flex-col gap-2 bg-neutral-950 p-0"
-                  align="start"
-                >
+                  align="start">
                   {isCreatingProject ? (
                     <div className="space-y-3 p-3">
                       <Input
@@ -308,8 +303,7 @@ export function TaskItem({ task }: TaskItemProps) {
                             setIsCreatingProject(false);
                             setNewProjectName("");
                             setNewProjectColor("#6b7280");
-                          }}
-                        >
+                          }}>
                           Cancel
                         </Button>
                         <Button
@@ -317,8 +311,7 @@ export function TaskItem({ task }: TaskItemProps) {
                           size="sm"
                           className="flex-1"
                           onClick={handleCreateProject}
-                          disabled={!newProjectName.trim()}
-                        >
+                          disabled={!newProjectName.trim()}>
                           Create
                         </Button>
                       </div>
@@ -334,8 +327,7 @@ export function TaskItem({ task }: TaskItemProps) {
                         className={cn(
                           "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent",
                           !editProjectId && "bg-accent",
-                        )}
-                      >
+                        )}>
                         <span className="h-2.5 w-2.5 rounded-full bg-muted" />
                         No project
                         {!editProjectId && (
@@ -353,8 +345,7 @@ export function TaskItem({ task }: TaskItemProps) {
                           className={cn(
                             "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent",
                             editProjectId === project._id && "bg-accent",
-                          )}
-                        >
+                          )}>
                           <span
                             className="h-2.5 w-2.5 rounded-full"
                             style={{ backgroundColor: project.color }}
@@ -369,8 +360,7 @@ export function TaskItem({ task }: TaskItemProps) {
                         <button
                           type="button"
                           onClick={() => setIsCreatingProject(true)}
-                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent"
-                        >
+                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent">
                           <FolderPlus className="h-4 w-4" />
                           Create new project
                         </button>
@@ -415,8 +405,7 @@ export function TaskItem({ task }: TaskItemProps) {
                   editPriority
                     ? "border-red-500 bg-red-500/10 text-red-500"
                     : "border-border text-muted-foreground hover:border-muted-foreground",
-                )}
-              >
+                )}>
                 <FlagTriangleRight
                   className={cn("h-4 w-4", editPriority && "fill-red-500")}
                 />
@@ -428,8 +417,7 @@ export function TaskItem({ task }: TaskItemProps) {
               <Button
                 size="sm"
                 onClick={handleSaveEdit}
-                disabled={!editText.trim()}
-              >
+                disabled={!editText.trim()}>
                 Save Changes
               </Button>
               <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
@@ -452,8 +440,7 @@ export function TaskItem({ task }: TaskItemProps) {
                 "text-sm",
                 task.status === "closed" &&
                   "text-muted-foreground line-through",
-              )}
-            >
+              )}>
               {task.text}
             </p>
 
@@ -484,6 +471,7 @@ export function TaskItem({ task }: TaskItemProps) {
       {task.status !== "closed" && !isEditing && (
         <Timer
           taskId={task._id}
+          taskName={task.text}
           timerStartedAt={task.timerStartedAt}
           totalTimeSpent={task.totalTimeSpent}
         />
@@ -502,8 +490,7 @@ export function TaskItem({ task }: TaskItemProps) {
           variant="ghost"
           size="icon-sm"
           className="h-6 w-6 hover:text-foreground group-hover:opacity-100 md:text-muted-foreground md:opacity-0 md:transition-opacity"
-          onClick={handleStartEdit}
-        >
+          onClick={handleStartEdit}>
           <Pencil className="h-3 w-3" />
         </Button>
       )}
@@ -514,8 +501,7 @@ export function TaskItem({ task }: TaskItemProps) {
           variant="ghost"
           size="icon-sm"
           className="h-6 w-6 hover:text-destructive group-hover:opacity-100 md:text-muted-foreground md:opacity-0 md:transition-opacity"
-          onClick={() => removeTask({ id: task._id })}
-        >
+          onClick={() => removeTask({ id: task._id })}>
           <Trash2 className="h-3 w-3" />
         </Button>
       )}
